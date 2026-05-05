@@ -1,4 +1,4 @@
-import type { Horizon, rpc } from "@stellar/stellar-sdk";
+import type { Horizon, SorobanRpc } from "@stellar/stellar-sdk";
 
 // ─── Network ──────────────────────────────────────────────────────────────────
 
@@ -58,14 +58,14 @@ export interface StellarAccountData {
 
 export interface StellarBalance {
   assetType: string;
-  assetCode?: string | undefined;
-  assetIssuer?: string | undefined;
+  assetCode?: string;
+  assetIssuer?: string;
   balance: string;
   /** Parsed as a float for convenience */
   balanceFloat: number;
   buyingLiabilities: string;
   sellingLiabilities: string;
-  limit?: string | undefined;
+  limit?: string;
   isNative: boolean;
 }
 
@@ -137,7 +137,7 @@ export interface UseContractCallReturn<TResult = unknown> extends TransactionSta
 // ─── Ledger Entry ─────────────────────────────────────────────────────────────
 
 export interface LedgerEntryState {
-  data: rpc.Api.LedgerEntryResult | null;
+  data: SorobanRpc.Api.LedgerEntryResult | null;
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
