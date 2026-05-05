@@ -2,7 +2,7 @@
   "$schema": "https://drips.network/schemas/funding-json-schema/0.2.json",
   "drips": {
     "ethereum": {
-      "ownedBy": "YOUR_ETHEREUM_WALLET_ADDRESS"
+      "ownedBy": "MY_ETHEREUM_WALLET_ADDRESS"
     }
   }
 }
