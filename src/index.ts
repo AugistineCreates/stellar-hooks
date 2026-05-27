@@ -8,6 +8,12 @@ export { useStellarBalance } from "./hooks/useStellarBalance";
 export { useSorobanContract } from "./hooks/useSorobanContract";
 export { useTransaction } from "./hooks/useTransaction";
 export { useLedgerEntry } from "./hooks/useLedgerEntry";
+export { usePathPayment } from "./hooks/usePathPayment";
+export type {
+  PathPaymentAsset,
+  UsePathPaymentOptions,
+  UsePathPaymentReturn,
+} from "./hooks/usePathPayment";
 
 // Types
 export type {
