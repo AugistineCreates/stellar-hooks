@@ -14,6 +14,47 @@ export interface NetworkConfig {
   networkPassphrase: string;
 }
 
+/**
+ * Endpoint configuration for a private or self-hosted Stellar network.
+ *
+ * Pass this object to the `customConfig` prop when {@link StellarProviderProps.network}
+ * is `"custom"`.
+ *
+ * @example
+ * ```tsx
+ * <StellarProvider
+ *   network="custom"
+ *   customConfig={{
+ *     network: "custom",
+ *     horizonUrl: "https://my-horizon.example.com",
+ *     sorobanRpcUrl: "https://my-rpc.example.com",
+ *     networkPassphrase: "My Network ; 2024",
+ *   }}
+ * >
+ *   ...
+ * </StellarProvider>
+ * ```
+ */
+export interface CustomNetworkConfig {
+  /** Must be `"custom"` when supplying a custom network configuration. */
+  network: "custom";
+  /**
+   * Horizon REST API base URL for this network.
+   * @example "https://my-horizon.example.com"
+   */
+  horizonUrl: string;
+  /**
+   * Soroban RPC endpoint URL for contract simulation and submission.
+   * @example "https://my-rpc.example.com"
+   */
+  sorobanRpcUrl: string;
+  /**
+   * Stellar network passphrase used when signing transactions.
+   * @example "My Network ; 2024"
+   */
+  networkPassphrase: string;
+}
+
 export const NETWORK_CONFIGS: Record<Exclude<StellarNetwork, "custom">, NetworkConfig> = {
   mainnet: {
     network: "mainnet",
@@ -150,9 +191,13 @@ export interface LedgerEntryState {
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export interface StellarProviderProps {
+  /** Built-in preset (`testnet`, `mainnet`, `futurenet`) or `"custom"` for a private network. @default "testnet" */
   network?: StellarNetwork;
-  /** Supply a full config when network === "custom" */
-  customConfig?: NetworkConfig;
+  /**
+   * Required when `network` is `"custom"`. Describes Horizon, Soroban RPC, and the
+   * network passphrase for your deployment.
+   */
+  customConfig?: CustomNetworkConfig;
   children: React.ReactNode;
 }
 

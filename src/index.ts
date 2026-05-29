@@ -23,6 +23,7 @@ export type {
   // Network
   StellarNetwork,
   NetworkConfig,
+  CustomNetworkConfig,
   // Account
   StellarAccountData,
   StellarBalance,
