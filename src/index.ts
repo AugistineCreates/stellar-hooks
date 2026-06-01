@@ -61,4 +61,4 @@ export type { UseStellarOffersOptions, UseStellarOffersReturn } from "./hooks/us
 export { NETWORK_CONFIGS } from "./types";
 
 // Utilities
-export { parseAccountResponse } from "./utils";
+export { parseAccountResponse, getCache, setCache, clearCache, deleteCache } from "./utils";

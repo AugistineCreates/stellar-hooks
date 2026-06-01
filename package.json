@@ -28,10 +28,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
     "changeset": "changeset",
     "changeset:version": "changeset version",
-    "changeset:publish": "changeset publish"
+    "changeset:publish": "changeset publish",
     "size": "npm run build && size-limit"
   },
   "size-limit": [
@@ -59,7 +59,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheBigWealth89/stellar-hooks.git"
     "url": "https://github.com/spiffamani/stellar-hooks.git"
   },
   "peerDependencies": {
@@ -71,12 +70,6 @@
     "@stellar/stellar-sdk": "^13.0.0"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^14.3.1",
-    "@stellar/freighter-api": "^6.0.1",
-    "@stellar/stellar-sdk": "^13.0.0"
-  },
-  "devDependencies": {
     "@size-limit/preset-small-lib": "^12.1.0",
     "@types/node": "^25.9.1",
     "@types/react": "^18.3.0",
@@ -85,6 +78,10 @@
     "@types/react-test-renderer": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^14.3.1",
+    "@stellar/freighter-api": "^6.0.1",
+    "@stellar/stellar-sdk": "^13.0.0",
     "eslint": "^8.57.0",
     "jsdom": "^29.1.1",
     "react": "^18.3.0",

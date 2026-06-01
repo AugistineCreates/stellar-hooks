@@ -13,6 +13,59 @@ type AccountResponseWithReserveFields = Horizon.AccountResponse & {
   num_sponsoring?: number;
 };
 
+// ─── Cache Utility ─────────────────────────────────────────────────────────────
+
+interface CacheEntry<T> {
+  value: T;
+  expiresAt: number;
+}
+
+const cache = new Map<string, CacheEntry<any>>();
+
+/**
+ * Get a value from the cache if it exists and hasn't expired.
+ * @param key Cache key
+ * @returns The cached value or undefined if not found/expired
+ */
+export function getCache<T>(key: string): T | undefined {
+  const entry = cache.get(key);
+  if (entry && Date.now() < entry.expiresAt) {
+    return entry.value;
+  }
+  cache.delete(key);
+  return undefined;
+}
+
+/**
+ * Set a value in the cache with a TTL.
+ * @param key Cache key
+ * @param value Value to cache
+ * @param ttlMs Time-to-live in milliseconds
+ */
+export function setCache<T>(key: string, value: T, ttlMs: number): void {
+  cache.set(key, {
+    value,
+    expiresAt: Date.now() + ttlMs,
+  });
+}
+
+/**
+ * Clear the entire cache.
+ */
+export function clearCache(): void {
+  cache.clear();
+}
+
+/**
+ * Clear a specific cache entry.
+ * @param key Cache key
+ */
+export function deleteCache(key: string): void {
+  cache.delete(key);
+}
+
+// ─── Account Parsing ──────────────────────────────────────────────────────────
+
 /**
  * Parse a raw Horizon AccountResponse into the friendlier StellarAccountData shape.
  */

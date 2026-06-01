@@ -7,12 +7,18 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { StellarToml } from "@stellar/stellar-sdk";
+import { getCache, setCache } from "../utils";
 
 export interface StellarTomlData {
   CURRENCIES?: Array<Record<string, any>>;
   VALIDATORS?: Array<Record<string, any>>;
   DOCUMENTATION?: Record<string, any>;
   [key: string]: any;
+}
+
+export interface UseStellarTomlOptions {
+  /** Time-to-live for cache in milliseconds (default: 300000 = 5 minutes) */
+  cacheTTL?: number;
 }
 
 /**
@@ -41,27 +47,38 @@ export interface UseStellarTomlReturn {
  */
 export function useStellarToml(
   domain: string | null | undefined,
+  options: UseStellarTomlOptions = {},
 ): UseStellarTomlReturn {
+  const { cacheTTL = 300000 } = options;
   const [data, setData] = useState<StellarTomlData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const refetch = useCallback(async () => {
+  const refetch = useCallback(async (force = false) => {
     if (!domain) return;
+
+    const cacheKey = `stellar-toml-${domain}`;
+    if (!force) {
+      const cached = getCache<StellarTomlData>(cacheKey);
+      if (cached) {
+        setData(cached);
+        return;
+      }
+    }
+
     setIsLoading(true);
     setError(null);
     try {
-      // StellarToml.Resolver is the correct API in @stellar/stellar-sdk@13
-      // (previously exported as StellarTomlResolver at the top level)
       const toml = await StellarToml.Resolver.resolve(domain);
-      setData(toml as StellarTomlData);
+      const parsed = toml as StellarTomlData;
+      setCache(cacheKey, parsed, cacheTTL);
+      setData(parsed);
     } catch (err) {
-      // Gracefully capture and surface errors (e.g., CORS, network failure)
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
     }
-  }, [domain]);
+  }, [domain, cacheTTL]);
 
   useEffect(() => {
     if (domain) {
@@ -69,5 +86,5 @@ export function useStellarToml(
     }
   }, [domain, refetch]);
 
-  return { data, isLoading, error, refetch };
+  return { data, isLoading, error, refetch: () => refetch(true) };
 }

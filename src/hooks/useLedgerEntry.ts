@@ -9,7 +9,7 @@ import { useCallback, useEffect, useReducer, useRef } from "react";
 import { rpc, xdr } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import type { LedgerEntryState } from "../types";
-import { sleep } from "../utils";
+import { getCache, setCache } from "../utils";
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
 
@@ -41,6 +41,8 @@ export interface UseLedgerEntryOptions {
   enabled?: boolean;
   /** Poll every N ms. Set to 0 to disable. Default: 0 */
   refetchInterval?: number;
+  /** Time-to-live for cache in milliseconds (default: 60000 = 1 minute) */
+  cacheTTL?: number;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -79,34 +81,39 @@ export function useLedgerEntry(
   ledgerKey: xdr.LedgerKey | null | undefined,
   options: UseLedgerEntryOptions = {},
 ): LedgerEntryState {
-  const { enabled = true, refetchInterval = 0 } = options;
+  const { enabled = true, refetchInterval = 0, cacheTTL = 60000 } = options;
   const { config } = useStellarContext();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const refetchRef = useRef<() => Promise<void>>(() => Promise.resolve());
+  const refetchRef = useRef<(force?: boolean) => Promise<void>>(() => Promise.resolve());
 
   const [state, dispatch] = useReducer(reducer, {
     data: null,
     isLoading: false,
     error: null,
     lastFetchedAt: null,
-    refetch: () => refetchRef.current(),
+    refetch: () => refetchRef.current(true),
   });
 
-  const fetch = useCallback(async () => {
+  const fetch = useCallback(async (force = false) => {
     if (!ledgerKey) return;
+
+    const cacheKey = `ledger-entry-${ledgerKey.toXDR("base64")}-${config.network}`;
+
+    if (!force) {
+      const cached = getCache<rpc.Api.LedgerEntryResult>(cacheKey);
+      if (cached) {
+        dispatch({ type: "FETCH_SUCCESS", payload: cached });
+        return;
+      }
+    }
+
     dispatch({ type: "FETCH_START" });
 
     try {
-      // rpc is the correct namespace in @stellar/stellar-sdk@13 (previously SorobanRpc)
       const server = new rpc.Server(config.sorobanRpcUrl);
       const result = await server.getLedgerEntries(ledgerKey);
-      if (!ledgerKey) return;
-      dispatch({ type: "FETCH_START" });
 
-      try {
-        const server = new rpc.Server(config.sorobanRpcUrl);
-        const result = await server.getLedgerEntries(ledgerKey);
       if (result.entries.length === 0) {
         dispatch({ type: "FETCH_NOT_FOUND" });
         return;
@@ -114,6 +121,7 @@ export function useLedgerEntry(
 
       const entry = result.entries[0];
       if (entry) {
+        setCache(cacheKey, entry, cacheTTL);
         dispatch({ type: "FETCH_SUCCESS", payload: entry });
       } else {
         dispatch({ type: "FETCH_NOT_FOUND" });
@@ -124,7 +132,7 @@ export function useLedgerEntry(
         payload: err instanceof Error ? err : new Error(String(err)),
       });
     }
-  }, [ledgerKey, config.sorobanRpcUrl]);
+  }, [ledgerKey, config.sorobanRpcUrl, config.network, cacheTTL]);
 
   // Keep ref fresh so state.refetch always points to the latest
   useEffect(() => { refetchRef.current = fetch; }, [fetch]);
@@ -136,7 +144,7 @@ export function useLedgerEntry(
 
   useEffect(() => {
     if (!enabled || !ledgerKey || refetchInterval <= 0) return;
-    intervalRef.current = setInterval(() => void fetch(), refetchInterval);
+    intervalRef.current = setInterval(() => void fetch(true), refetchInterval);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [enabled, ledgerKey, refetchInterval, fetch]);
 

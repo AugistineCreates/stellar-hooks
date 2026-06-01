@@ -184,6 +184,11 @@ export interface ContractCallOptions<TResult = any> {
   onSuccess?: (result: TResult) => void;
   /** Callback fired when the transaction fails or an error occurs. */
   onError?: (error: Error) => void;
+  /**
+   * Optional function to parse the raw xdr.ScVal result to your desired TResult type.
+   * If not provided, the raw xdr.ScVal is returned (or tx hash as fallback).
+   */
+  parseResult?: (scVal: any) => TResult;
 }
 
 export interface UseContractCallReturn<TResult = unknown> extends TransactionState<TResult> {
