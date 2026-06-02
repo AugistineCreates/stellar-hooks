@@ -1,8 +1,9 @@
 # stellar-hooks
 
-[![npm version](https://img.shields.io/npm/v/stellar-hooks.svg?style=flat-square)](https://www.npmjs.com/package/stellar-hooks)
-[![license](https://img.shields.io/npm/l/stellar-hooks.svg?style=flat-square)](LICENSE)
-[![bundle size](https://img.shields.io/bundlephobia/min/stellar-hooks?style=flat-square)](https://bundlephobia.com/package/stellar-hooks)
+[![npm version](https://img.shields.io/badge/npm-v0.1.0-blue?style=flat-square)](https://www.npmjs.com/package/stellar-hooks)
+[![license](https://img.shields.io/github/license/dark-princezz/stellar-hooks.svg?style=flat-square)](LICENSE)
+[![bundle size](https://img.shields.io/badge/bundle%20size-12.5%20KB-blue?style=flat-square)](https://github.com/dark-princezz/stellar-hooks)
+
 
 > React hooks for Stellar and Soroban. The `wagmi` you've been waiting for.
 
