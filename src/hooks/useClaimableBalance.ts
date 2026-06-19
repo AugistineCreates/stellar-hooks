@@ -188,8 +188,8 @@ export function useClaimBalance(
   const { signTransaction, publicKey } = useFreighter();
   const { submit: submitXdr, reset, ...txState } = useTransaction({
     mode: "classic",
-    onSuccess,
-    onError,
+    ...(onSuccess && { onSuccess }),
+    ...(onError && { onError }),
   });
 
   const claim = useCallback(

@@ -37,8 +37,8 @@ export function useStellarTransaction(options: UseStellarTransactionOptions = {}
   const { submit: submitXdr, reset, status, hash, error, isLoading, isSuccess, isError } = useTransaction({
     mode: "classic",
     timeoutSeconds,
-    onSuccess,
-    onError,
+    ...(onSuccess && { onSuccess }),
+    ...(onError && { onError }),
   });
 
   const submit = useCallback(async (operations: Operation[]) => {
