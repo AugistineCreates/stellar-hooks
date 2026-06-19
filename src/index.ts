@@ -9,6 +9,7 @@
 export { StellarProvider, useStellarContext } from "./context";
 
 // Hooks
+export { useNetwork } from "./hooks/useNetwork";
 export { useFreighter } from "./hooks/useFreighter";
 export { useStellarAccount } from "./hooks/useStellarAccount";
 export { useStellarBalance } from "./hooks/useStellarBalance";

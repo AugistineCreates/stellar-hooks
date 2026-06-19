@@ -5,11 +5,18 @@
  * @license MIT
  */
 
-import React, { createContext, useContext, useMemo } from "react";
-import type { StellarContextValue, StellarProviderProps } from "./types";
+import React, { createContext, useContext, useMemo, useState, useCallback, useEffect } from "react";
+import type { StellarContextValue, StellarProviderProps, StellarNetwork, CustomNetworkConfig, NetworkConfig } from "./types";
 import { NETWORK_CONFIGS } from "./types";
 
-const StellarContext = createContext<StellarContextValue | null>(null);
+const NETWORK_STORAGE_KEY = "stellar-hooks:network";
+const CUSTOM_CONFIG_STORAGE_KEY = "stellar-hooks:custom-config";
+
+interface StellarContextInternalValue extends StellarContextValue {
+  switchNetwork: (newNetwork: StellarNetwork, newCustomConfig?: CustomNetworkConfig) => void;
+}
+
+const StellarContext = createContext<StellarContextInternalValue | null>(null);
 
 /**
  * Wrap your app (or the portion that needs Stellar) with this provider.
@@ -22,25 +29,47 @@ const StellarContext = createContext<StellarContextValue | null>(null);
  * ```
  */
 export function StellarProvider({
-  network = "testnet",
-  customConfig,
+  network: initialNetwork = "testnet",
+  customConfig: initialCustomConfig,
   children,
 }: StellarProviderProps) {
-  const config = useMemo(() => {
-    if (network === "custom") {
-      if (!customConfig) {
-        throw new Error(
-          '[stellar-hooks] network="custom" requires a customConfig prop.'
-        );
-      }
+  const [network, setNetwork] = useState<StellarNetwork>(initialNetwork);
+  const [customConfig, setCustomConfig] = useState<CustomNetworkConfig | null>(
+    initialCustomConfig || null
+  );
+
+  useEffect(() => {
+    const savedNetwork = localStorage.getItem(NETWORK_STORAGE_KEY) as StellarNetwork;
+    if (savedNetwork) setNetwork(savedNetwork);
+
+    const savedCustomConfig = localStorage.getItem(CUSTOM_CONFIG_STORAGE_KEY);
+    if (savedCustomConfig) {
+      try {
+        setCustomConfig(JSON.parse(savedCustomConfig));
+      } catch {}
+    }
+  }, []);
+
+  const switchNetwork = useCallback((newNetwork: StellarNetwork, newCustomConfig?: CustomNetworkConfig) => {
+    setNetwork(newNetwork);
+    localStorage.setItem(NETWORK_STORAGE_KEY, newNetwork);
+
+    if (newNetwork === "custom" && newCustomConfig) {
+      setCustomConfig(newCustomConfig);
+      localStorage.setItem(CUSTOM_CONFIG_STORAGE_KEY, JSON.stringify(newCustomConfig));
+    }
+  }, []);
+
+  const config = useMemo<NetworkConfig>(() => {
+    if (network === "custom" && customConfig) {
       return customConfig;
     }
-    return NETWORK_CONFIGS[network];
+    return NETWORK_CONFIGS[network as keyof typeof NETWORK_CONFIGS] || NETWORK_CONFIGS.testnet;
   }, [network, customConfig]);
 
-  const value = useMemo<StellarContextValue>(
-    () => ({ config, network }),
-    [config, network]
+  const value = useMemo<StellarContextInternalValue>(
+    () => ({ config, network, switchNetwork }),
+    [config, network, switchNetwork]
   );
 
   return (
@@ -51,7 +80,7 @@ export function StellarProvider({
 /**
  * Internal hook — consume the Stellar context inside other hooks.
  */
-export function useStellarContext(): StellarContextValue {
+export function useStellarContext(): StellarContextInternalValue {
   const ctx = useContext(StellarContext);
   if (!ctx) {
     throw new Error(
