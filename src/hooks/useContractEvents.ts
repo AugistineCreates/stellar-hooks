@@ -70,14 +70,19 @@ export function useContractEvents(options: UseContractEventsOptions) {
         topics: options.topics,
       };
 
-      const response = await server.getEvents({
-        startLedger: options.startLedger,
+      const request: rpc.Api.GetEventsRequest = {
         filters: [filter],
         pagination: {
           cursor: cursorRef.current,
           limit: options.limit || 100,
-        }
-      });
+        },
+      };
+
+      if (options.startLedger !== undefined) {
+        request.startLedger = options.startLedger;
+      }
+
+      const response = await server.getEvents(request);
 
       if (isMounted.current && response.events) {
         if (response.events.length > 0) {

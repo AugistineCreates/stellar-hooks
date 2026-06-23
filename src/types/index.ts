@@ -127,8 +127,20 @@ export interface FreighterState {
   publicKey: string | null;
   network: string | null;
   networkPassphrase: string | null;
+  /** True when Freighter's network passphrase differs from the app's expected network. */
+  networkPassphraseMismatch: boolean;
+  /** Actionable warning when {@link networkPassphraseMismatch} is true; otherwise null. */
+  networkPassphraseWarning: string | null;
   isLoading: boolean;
   error: Error | null;
+}
+
+export interface UseFreighterOptions {
+  /**
+   * Expected Stellar network passphrase for this dApp.
+   * Defaults to the {@link StellarProvider} config when the hook runs inside the provider.
+   */
+  expectedNetworkPassphrase?: string;
 }
 
 export interface UseFreighterReturn extends FreighterState {

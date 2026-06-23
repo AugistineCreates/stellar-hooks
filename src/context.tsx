@@ -78,6 +78,13 @@ export function StellarProvider({
 }
 
 /**
+ * Optional context reader — returns null when rendered outside {@link StellarProvider}.
+ */
+export function useOptionalStellarContext(): StellarContextInternalValue | null {
+  return useContext(StellarContext);
+}
+
+/**
  * Internal hook — consume the Stellar context inside other hooks.
  */
 export function useStellarContext(): StellarContextInternalValue {

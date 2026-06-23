@@ -3,10 +3,12 @@ import { vi } from "vitest";
 export const isConnected = vi.fn().mockResolvedValue({ isConnected: false });
 export const getAddress = vi.fn().mockResolvedValue({ address: null, error: "Not connected" });
 export const getNetwork = vi.fn().mockResolvedValue({ network: null, networkPassphrase: null });
+export const getNetworkDetails = getNetwork;
 export const requestAccess = vi.fn().mockResolvedValue({ address: null, error: null });
 export const signTransaction = vi.fn().mockResolvedValue({ signedTxXdr: "signed-xdr", error: null });
 export const signAuthEntry = vi.fn().mockResolvedValue({ signedAuthEntry: "signed-entry", error: null });
-export const signBlob = vi.fn().mockResolvedValue({ signedBlob: "signed-blob", error: null });
+export const signMessage = vi.fn().mockResolvedValue({ signedMessage: "signed-blob", error: null });
+export const signBlob = signMessage;
 
 export function resetFreighterMocks() {
   isConnected.mockResolvedValue({ isConnected: false });
@@ -15,7 +17,7 @@ export function resetFreighterMocks() {
   requestAccess.mockResolvedValue({ address: null, error: null });
   signTransaction.mockResolvedValue({ signedTxXdr: "signed-xdr", error: null });
   signAuthEntry.mockResolvedValue({ signedAuthEntry: "signed-entry", error: null });
-  signBlob.mockResolvedValue({ signedBlob: "signed-blob", error: null });
+  signMessage.mockResolvedValue({ signedMessage: "signed-blob", error: null });
 }
 
 export function mockFreighterConnected(

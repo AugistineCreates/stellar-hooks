@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import {
   isConnected,
   getAddress,
@@ -8,7 +8,40 @@ import {
   signAuthEntry,
   signMessage,
 } from "@stellar/freighter-api";
-import type { FreighterState, SignTransactionOptions, UseFreighterReturn } from "../types";
+import { useOptionalStellarContext } from "../context";
+import type {
+  FreighterState,
+  SignTransactionOptions,
+  UseFreighterOptions,
+  UseFreighterReturn,
+} from "../types";
+
+// ─── Network mismatch helpers ─────────────────────────────────────────────────
+
+function buildNetworkPassphraseWarning(
+  walletNetwork: string | null,
+  expectedPassphrase: string,
+): string {
+  const networkLabel = walletNetwork ?? "a different network";
+  return (
+    `Freighter is connected to ${networkLabel}, which does not match this app's ` +
+    `configured network (${expectedPassphrase}). Switch the network in Freighter or ` +
+    `update your StellarProvider configuration to avoid signing on the wrong network.`
+  );
+}
+
+function getNetworkPassphraseMismatch(
+  isConnected: boolean,
+  walletPassphrase: string | null,
+  expectedPassphrase: string | null,
+): boolean {
+  return Boolean(
+    isConnected &&
+      walletPassphrase &&
+      expectedPassphrase &&
+      walletPassphrase !== expectedPassphrase
+  );
+}
 
 // ─── State Machine ────────────────────────────────────────────────────────────
 
@@ -19,7 +52,9 @@ type Action =
   | { type: "SET_NOT_INSTALLED" }
   | { type: "SET_ERROR"; payload: Error };
 
-function reducer(state: FreighterState, action: Action): FreighterState {
+type WalletReducerState = Omit<FreighterState, "networkPassphraseMismatch" | "networkPassphraseWarning">;
+
+function reducer(state: WalletReducerState, action: Action): WalletReducerState {
   switch (action.type) {
     case "SET_LOADING":
       return { ...state, isLoading: action.payload, error: null };
@@ -37,6 +72,7 @@ function reducer(state: FreighterState, action: Action): FreighterState {
     case "SET_DISCONNECTED":
       return {
         ...state,
+        isInstalled: true,
         isConnected: false,
         publicKey: null,
         network: null,
@@ -53,7 +89,7 @@ function reducer(state: FreighterState, action: Action): FreighterState {
   }
 }
 
-const initial: FreighterState = {
+const initial: Omit<FreighterState, "networkPassphraseMismatch" | "networkPassphraseWarning"> = {
   isInstalled: false,
   isConnected: false,
   publicKey: null,
@@ -76,8 +112,26 @@ const initial: FreighterState = {
  * return <p>Connected: {publicKey}</p>;
  * ```
  */
-export function useFreighter(): UseFreighterReturn {
+export function useFreighter(options?: UseFreighterOptions): UseFreighterReturn {
   const [state, dispatch] = useReducer(reducer, initial);
+  const stellarContext = useOptionalStellarContext();
+  const expectedNetworkPassphrase =
+    options?.expectedNetworkPassphrase ?? stellarContext?.config.networkPassphrase ?? null;
+
+  const networkPassphraseMismatch = useMemo(
+    () =>
+      getNetworkPassphraseMismatch(
+        state.isConnected,
+        state.networkPassphrase,
+        expectedNetworkPassphrase,
+      ),
+    [state.isConnected, state.networkPassphrase, expectedNetworkPassphrase],
+  );
+
+  const networkPassphraseWarning = useMemo(() => {
+    if (!networkPassphraseMismatch || !expectedNetworkPassphrase) return null;
+    return buildNetworkPassphraseWarning(state.network, expectedNetworkPassphrase);
+  }, [networkPassphraseMismatch, expectedNetworkPassphrase, state.network]);
 
   useEffect(() => {
     let cancelled = false;
@@ -183,6 +237,8 @@ export function useFreighter(): UseFreighterReturn {
 
   return {
     ...state,
+    networkPassphraseMismatch,
+    networkPassphraseWarning,
     connect,
     disconnect,
     signTransaction: signTx,

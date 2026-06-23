@@ -16,7 +16,7 @@ vi.mock("react", async () => {
     useCallback: (fn: unknown) => fn,
     useReducer: vi.fn(),
     useEffect: vi.fn(),
-    useRef: vi.fn().mockReturnValue({ current: null }),
+    useRef: vi.fn().mockReturnValue({ current: true }),
   };
 });
 
