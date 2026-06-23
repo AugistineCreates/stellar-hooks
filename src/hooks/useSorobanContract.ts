@@ -11,7 +11,6 @@ import {
   rpc,
   Transaction,
   TransactionBuilder,
-  Networks,
   BASE_FEE,
   xdr,
   nativeToScVal,

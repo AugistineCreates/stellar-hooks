@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useSorobanContract } from "../hooks/useSorobanContract";
-import { rpc, xdr } from "@stellar/stellar-sdk";
+import { xdr } from "@stellar/stellar-sdk";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -73,9 +74,8 @@ describe("useSorobanContract", () => {
 
     const { result } = renderHook(() => useSorobanContract("C123", { method: "hello" }));
 
-    let callResult;
     await act(async () => {
-      callResult = await result.current.call();
+      await result.current.call();
     });
 
     expect(result.current.status).toBe("success");
@@ -91,7 +91,7 @@ describe("useSorobanContract", () => {
 
     const { result } = renderHook(() => useSorobanContract("C123", { 
       method: "get_val",
-      parseResult: (val: any) => "parsed_val"
+      parseResult: () => "parsed_val"
     }));
 
     await act(async () => {

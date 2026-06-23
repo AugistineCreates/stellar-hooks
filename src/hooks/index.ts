@@ -9,11 +9,6 @@ export type { UseStellarOffersOptions, UseStellarOffersReturn } from "./useStell
 
 export { useFreighter } from "./useFreighter";
 
-export { useTrades } from "./useTrades";
-export type { Trade, UseTradesOptions, UseTradesReturn } from "./useTrades";
-
-export { useAsset } from "./useAsset";
-export type { AssetMetadata, UseAssetOptions, UseAssetReturn } from "./useAsset";
 
 export { useStellarToml } from "./useStellarToml";
 export type { UseStellarTomlOptions, UseStellarTomlReturn } from "./useStellarToml";

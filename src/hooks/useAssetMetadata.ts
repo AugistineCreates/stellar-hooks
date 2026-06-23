@@ -14,7 +14,7 @@ export interface AssetMetadata {
   name?: string;
   desc?: string;
   image?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**

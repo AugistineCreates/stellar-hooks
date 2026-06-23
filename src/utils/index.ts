@@ -15,8 +15,8 @@ export function parseAccountResponse(raw: Horizon.AccountResponse): StellarAccou
     accountId: raw.account_id,
     sequence: raw.sequence,
     subentryCount: raw.subentry_count,
-    numSponsored: (raw as any).num_sponsored ?? 0,
-    numSponsoring: (raw as any).num_sponsoring ?? 0,
+    numSponsored: (raw as Horizon.AccountResponse & { num_sponsored?: number }).num_sponsored ?? 0,
+    numSponsoring: (raw as Horizon.AccountResponse & { num_sponsoring?: number }).num_sponsoring ?? 0,
     thresholds: {
       lowThreshold: raw.thresholds.low_threshold,
       medThreshold: raw.thresholds.med_threshold,
@@ -68,7 +68,7 @@ export function backoff(attempt: number, base = 1000) {
 
 // ─── Simple In-Memory Cache ───────────────────────────────────────────────────
 
-const cache = new Map<string, { data: any; expires: number }>();
+const cache = new Map<string, { data: unknown; expires: number }>();
 
 export function getCache<T>(key: string): T | null {
   const item = cache.get(key);

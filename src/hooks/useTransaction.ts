@@ -10,7 +10,6 @@ import {
   rpc,
   TransactionBuilder,
   Horizon,
-  xdr,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import type { TransactionState, TransactionStatus } from "../types";
