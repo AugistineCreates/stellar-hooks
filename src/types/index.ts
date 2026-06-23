@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import type { Horizon, rpc } from "@stellar/stellar-sdk";
+import type { Horizon, rpc, xdr } from "@stellar/stellar-sdk";
 
 // ─── Network ──────────────────────────────────────────────────────────────────
 
@@ -173,7 +173,7 @@ export interface ContractCallOptions<TResult = any> {
   /** Soroban contract address (C...) */
   contractId: string;
   method: string;
-  args?: unknown[];
+  args?: xdr.ScVal[];
   /** Fee in stroops. Defaults to 100 */
   fee?: number;
   /** Timeout in seconds. Defaults to 30 */
@@ -188,7 +188,7 @@ export interface ContractCallOptions<TResult = any> {
    * Optional function to parse the raw xdr.ScVal result to your desired TResult type.
    * If not provided, the raw xdr.ScVal is returned (or tx hash as fallback).
    */
-  parseResult?: (scVal: any) => TResult;
+  parseResult?: (scVal: xdr.ScVal) => TResult;
 }
 
 export interface UseContractCallReturn<TResult = unknown>
