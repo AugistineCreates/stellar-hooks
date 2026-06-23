@@ -37,6 +37,12 @@ export type {
 } from "./usePayment";
 export { usePathPayment } from "./usePathPayment";
 
+export { useAccountMerge } from "./useAccountMerge";
+export type {
+  UseAccountMergeOptions,
+  UseAccountMergeReturn,
+} from "./useAccountMerge";
+
 export { useSorobanTokenBalance } from "./useSorobanTokenBalance";
 export type {
   SorobanTokenBalanceState,
