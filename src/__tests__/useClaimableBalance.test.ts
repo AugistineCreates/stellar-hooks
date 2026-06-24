@@ -34,6 +34,13 @@ vi.mock("@stellar/stellar-sdk", () => ({
     vi.fn().mockImplementation((code: string, issuer: string) => ({ code, issuer })),
     { native: vi.fn().mockReturnValue({ type: "native" }) }
   ),
+  Claimant: Object.assign(
+    vi.fn().mockImplementation((destination: string, predicate: unknown) => ({
+      destination,
+      predicate,
+    })),
+    { predicateUnconditional: vi.fn().mockReturnValue({ unconditional: true }) }
+  ),
   Horizon: {
     Server: vi.fn().mockImplementation(() => ({
       loadAccount: mockLoadAccount,
@@ -45,6 +52,7 @@ vi.mock("@stellar/stellar-sdk", () => ({
   },
   Operation: {
     claimClaimableBalance: vi.fn().mockReturnValue({ type: "claimClaimableBalance" }),
+    createClaimableBalance: vi.fn().mockReturnValue({ type: "createClaimableBalance" }),
   },
   TransactionBuilder: vi.fn().mockImplementation(() => ({
     addOperation: mockAddOperation,
@@ -90,7 +98,11 @@ vi.mock("../hooks/useFreighter", () => ({
 
 // ─── Import AFTER mocks ───────────────────────────────────────────────────────
 
-import { useClaimableBalances, useClaimBalance } from "../hooks/useClaimableBalance";
+import {
+  useClaimableBalances,
+  useClaimBalance,
+  useCreateClaimableBalance,
+} from "../hooks/useClaimableBalance";
 import { useReducer } from "react";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -180,4 +192,99 @@ describe("useClaimBalance", () => {
     "Freighter is not connected"
   );
 });
+});
+
+describe("useCreateClaimableBalance", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    setupReducer();
+  });
+
+  it("returns correct initial state", () => {
+    const hook = useCreateClaimableBalance();
+    expect(hook.status).toBe("idle");
+    expect(hook.hash).toBeNull();
+    expect(hook.error).toBeNull();
+    expect(hook.isLoading).toBe(false);
+    expect(hook.isSuccess).toBe(false);
+    expect(hook.isError).toBe(false);
+    expect(typeof hook.create).toBe("function");
+    expect(typeof hook.reset).toBe("function");
+  });
+
+  it("builds, signs, and submits a create transaction", async () => {
+    const hook = useCreateClaimableBalance();
+    await hook.create({
+      asset: { type: "native" },
+      amount: "10",
+      claimants: [{ destination: "GDEST..." }],
+    });
+
+    expect(mockSignTransaction).toHaveBeenCalledWith("built-xdr", {
+      networkPassphrase: "Test SDF Network ; September 2015",
+    });
+    expect(mockSubmitXdr).toHaveBeenCalledWith("signed-xdr");
+  });
+
+  it("locks a native asset via Asset.native()", async () => {
+    const { Asset } = await import("@stellar/stellar-sdk");
+    const hook = useCreateClaimableBalance();
+    await hook.create({
+      asset: { type: "native" },
+      amount: "10",
+      claimants: [{ destination: "GDEST..." }],
+    });
+
+    expect(Asset.native).toHaveBeenCalled();
+  });
+
+  it("locks a credit asset via new Asset(code, issuer)", async () => {
+    const { Asset } = await import("@stellar/stellar-sdk");
+    const hook = useCreateClaimableBalance();
+    await hook.create({
+      asset: { type: "credit", code: "USDC", issuer: "GISSUER..." },
+      amount: "5",
+      claimants: [{ destination: "GDEST..." }],
+    });
+
+    expect(Asset.native).not.toHaveBeenCalled();
+    expect(Asset).toHaveBeenCalledWith("USDC", "GISSUER...");
+  });
+
+  it("defaults to an unconditional predicate when none is given", async () => {
+    const { Claimant, Operation } = await import("@stellar/stellar-sdk");
+    const hook = useCreateClaimableBalance();
+    await hook.create({
+      asset: { type: "native" },
+      amount: "10",
+      claimants: [{ destination: "GDEST..." }],
+    });
+
+    expect(Claimant.predicateUnconditional).toHaveBeenCalled();
+    expect(Claimant).toHaveBeenCalledWith("GDEST...", { unconditional: true });
+    expect(Operation.createClaimableBalance).toHaveBeenCalledWith(
+      expect.objectContaining({ amount: "10" })
+    );
+  });
+
+  it("uses a supplied predicate instead of the default", async () => {
+    const { Claimant } = await import("@stellar/stellar-sdk");
+    const customPredicate = { custom: true } as never;
+    const hook = useCreateClaimableBalance();
+    await hook.create({
+      asset: { type: "native" },
+      amount: "10",
+      claimants: [{ destination: "GDEST...", predicate: customPredicate }],
+    });
+
+    expect(Claimant.predicateUnconditional).not.toHaveBeenCalled();
+    expect(Claimant).toHaveBeenCalledWith("GDEST...", customPredicate);
+  });
+
+  it("throws when no claimants are provided", async () => {
+    const hook = useCreateClaimableBalance();
+    await expect(
+      hook.create({ asset: { type: "native" }, amount: "10", claimants: [] })
+    ).rejects.toThrow("At least one claimant is required.");
+  });
 });

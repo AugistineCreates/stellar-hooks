@@ -32,6 +32,24 @@ export type {
   UsePathPaymentReturn,
 } from "./hooks/usePathPayment";
 
+export {
+  useClaimableBalances,
+  useClaimBalance,
+  useCreateClaimableBalance,
+} from "./hooks/useClaimableBalance";
+export type {
+  ClaimableBalanceRecord,
+  ClaimableBalancesState,
+  ClaimableBalanceAsset,
+  ClaimantInput,
+  CreateClaimableBalanceParams,
+  UseClaimBalanceOptions,
+  UseClaimBalanceReturn,
+  UseClaimableBalancesReturn,
+  UseCreateClaimableBalanceOptions,
+  UseCreateClaimableBalanceReturn,
+} from "./hooks/useClaimableBalance";
+
 export { useSorobanTokenBalance } from "./hooks/useSorobanTokenBalance";
 export type {
   SorobanTokenBalanceState,

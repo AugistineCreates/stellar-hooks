@@ -37,6 +37,24 @@ export type {
 } from "./usePayment";
 export { usePathPayment } from "./usePathPayment";
 
+export {
+  useClaimableBalances,
+  useClaimBalance,
+  useCreateClaimableBalance,
+} from "./useClaimableBalance";
+export type {
+  ClaimableBalanceRecord,
+  ClaimableBalancesState,
+  ClaimableBalanceAsset,
+  ClaimantInput,
+  CreateClaimableBalanceParams,
+  UseClaimBalanceOptions,
+  UseClaimBalanceReturn,
+  UseClaimableBalancesReturn,
+  UseCreateClaimableBalanceOptions,
+  UseCreateClaimableBalanceReturn,
+} from "./useClaimableBalance";
+
 export { useSorobanTokenBalance } from "./useSorobanTokenBalance";
 export type {
   SorobanTokenBalanceState,
