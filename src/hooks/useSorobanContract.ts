@@ -89,6 +89,8 @@ function createReducer<TResult>() {
  * );
  * ```
  */
+export function useSorobanContract<TResult = xdr.ScVal>(
+  options: ContractCallOptions
 export function useSorobanContract<TResult = unknown>(
   contractId: StellarContractId,
   options: Omit<ContractCallOptions<TResult>, "contractId">
@@ -315,6 +317,8 @@ export function useSorobanContract<TResult = unknown>(
     },
     [baseParse, simulate]
   );
+
+  const [result, setResult] = useState<TResult | null>(null);
 
   const reset = useCallback(() => dispatch({ type: "RESET" }), []);
 
