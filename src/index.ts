@@ -38,6 +38,13 @@ export type {
   UseSorobanTokenBalanceOptions,
 } from "./hooks/useSorobanTokenBalance";
 
+export { useMultiSig } from "./hooks/useMultiSig";
+export type {
+  BuildOptions,
+  UseMultiSigOptions,
+  UseMultiSigReturn,
+} from "./hooks/useMultiSig";
+
 // Types
 export type {
   // Network

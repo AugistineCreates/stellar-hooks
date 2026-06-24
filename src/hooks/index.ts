@@ -42,3 +42,10 @@ export type {
   SorobanTokenBalanceState,
   UseSorobanTokenBalanceOptions,
 } from "./useSorobanTokenBalance";
+
+export { useMultiSig } from "./useMultiSig";
+export type {
+  BuildOptions,
+  UseMultiSigOptions,
+  UseMultiSigReturn,
+} from "./useMultiSig";
