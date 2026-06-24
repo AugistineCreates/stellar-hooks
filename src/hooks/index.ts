@@ -49,3 +49,9 @@ export type {
   UseMultiSigOptions,
   UseMultiSigReturn,
 } from "./useMultiSig";
+
+export { useTrustline } from "./useTrustline";
+export type {
+  UseTrustlineOptions,
+  UseTrustlineReturn,
+} from "./useTrustline";

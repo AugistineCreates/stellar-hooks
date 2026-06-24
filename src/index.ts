@@ -45,6 +45,12 @@ export type {
   UseMultiSigReturn,
 } from "./hooks/useMultiSig";
 
+export { useTrustline } from "./hooks/useTrustline";
+export type {
+  UseTrustlineOptions,
+  UseTrustlineReturn,
+} from "./hooks/useTrustline";
+
 // Types
 export type {
   // Network
