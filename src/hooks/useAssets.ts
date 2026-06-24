@@ -74,6 +74,15 @@ const initialState: State = {
  *
  * @param {UseAssetsOptions} [options={}] - Configuration options.
  * @returns {UseAssetsReturn}
+ *
+ * @example
+ * ```tsx
+ * const { assets, isLoading, error } = useAssets({ assetCode: "USDC" });
+ *
+ * return assets.map((a) => (
+ *   <p key={a.asset_code + a.asset_issuer}>{a.asset_code} — {a.amount}</p>
+ * ));
+ * ```
  */
 export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
   const {

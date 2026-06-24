@@ -10,8 +10,26 @@ import type * as rpc from "@stellar/stellar-sdk/rpc";
 
 // ─── Network ──────────────────────────────────────────────────────────────────
 
+/**
+ * Identifies the Stellar network to connect to.
+ *
+ * @example
+ * ```ts
+ * const network: StellarNetwork = "testnet";
+ * switchNetwork("mainnet");
+ * ```
+ */
 export type StellarNetwork = "mainnet" | "testnet" | "futurenet" | "custom";
 
+/**
+ * Endpoint configuration for a Stellar network preset.
+ *
+ * @example
+ * ```ts
+ * const config: NetworkConfig = NETWORK_CONFIGS.testnet;
+ * console.log(config.horizonUrl); // "https://horizon-testnet.stellar.org"
+ * ```
+ */
 export interface NetworkConfig {
   network: StellarNetwork;
   /** Horizon REST API endpoint */
@@ -122,6 +140,16 @@ export const NETWORK_CONFIGS: Record<Exclude<StellarNetwork, "custom">, NetworkC
 
 // ─── Account ──────────────────────────────────────────────────────────────────
 
+/**
+ * Parsed Stellar account data returned by `useStellarAccount`.
+ *
+ * @example
+ * ```ts
+ * const { account } = useStellarAccount(publicKey);
+ * console.log(account?.sequence);       // "12345678"
+ * console.log(account?.balances[0].balance); // "100.0000000"
+ * ```
+ */
 export interface StellarAccountData {
   accountId: StellarPublicKey;
   balances: StellarBalance[];
@@ -143,6 +171,19 @@ export interface StellarAccountData {
   raw: Horizon.AccountResponse;
 }
 
+/**
+ * A single balance entry from a Stellar account.
+ *
+ * @example
+ * ```ts
+ * const { xlmBalance } = useStellarBalance(publicKey);
+ * if (xlmBalance) {
+ *   console.log(xlmBalance.balance);      // "100.0000000"
+ *   console.log(xlmBalance.balanceFloat); // 100
+ *   console.log(xlmBalance.isNative);     // true
+ * }
+ * ```
+ */
 export interface StellarBalance {
   assetType: string;
   assetCode?: string;
@@ -158,6 +199,17 @@ export interface StellarBalance {
 
 // ─── Wallet / Freighter ───────────────────────────────────────────────────────
 
+/**
+ * State snapshot of the Freighter browser extension wallet.
+ *
+ * @example
+ * ```ts
+ * const { isInstalled, isConnected, publicKey } = useFreighter();
+ * if (!isInstalled) return <p>Install Freighter</p>;
+ * if (!isConnected) return <button onClick={connect}>Connect</button>;
+ * return <p>{publicKey}</p>;
+ * ```
+ */
 export interface FreighterState {
   isInstalled: boolean;
   isConnected: boolean;
@@ -197,6 +249,16 @@ export interface SignTransactionOptions {
 
 // ─── Transactions ─────────────────────────────────────────────────────────────
 
+/**
+ * Lifecycle stages of a Stellar transaction submission.
+ *
+ * @example
+ * ```ts
+ * const { status } = useSorobanContract("C...", { method: "increment" });
+ * // "idle" → "building" → "signing" → "submitting" → "polling" → "success" | "error"
+ * const isInFlight = status !== "idle" && status !== "success" && status !== "error";
+ * ```
+ */
 export type TransactionStatus =
   | "idle"
   | "building"
@@ -206,6 +268,16 @@ export type TransactionStatus =
   | "success"
   | "error";
 
+/**
+ * Generic transaction state shared by all transactional hooks.
+ *
+ * @example
+ * ```ts
+ * const { status, hash, result, error, isLoading, isSuccess, isError } = useSorobanContract(...);
+ * if (isSuccess) console.log("tx hash:", hash);
+ * if (isError)   console.error(error?.message);
+ * ```
+ */
 export interface TransactionState<TResult = unknown> {
   status: TransactionStatus;
   hash: StellarTxHash | null;

@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Horizon, Transaction, TransactionBuilder, xdr } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
-import { useTransaction } from "./useTransaction";
+import { useTransactionCore } from "./useTransactionCore";
 import { unsafeAsXdrString, type TransactionStatus } from "../types";
 import { validatePublicKey } from "../utils";
 
@@ -31,11 +31,33 @@ export interface UseStellarTransactionReturn {
   reset: () => void;
 }
 
+/**
+ * Build a classic Stellar transaction from raw XDR operations, optionally wrap
+ * it in a fee-bump transaction, sign via Freighter, and submit through Horizon.
+ *
+ * @example
+ * ```tsx
+ * const { submit, status, txHash, isLoading } = useStellarTransaction({
+ *   fee: 100,
+ *   onSuccess: (hash) => console.log("Confirmed:", hash),
+ * });
+ *
+ * await submit([Operation.payment({ destination, asset, amount })]);
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With fee-bump sponsorship
+ * const { submit, status } = useStellarTransaction({
+ *   feeBump: { fee: "500", sponsor: sponsorPublicKey },
+ * });
+ * ```
+ */
 export function useStellarTransaction(options: UseStellarTransactionOptions = {}): UseStellarTransactionReturn {
   const { fee = 100, timeoutSeconds = 60, feeBump, onSuccess, onError } = options;
   const { config } = useStellarContext();
   const { signTransaction, publicKey } = useFreighter();
-  const { submit: submitXdr, reset, status, hash, error, isLoading, isSuccess, isError } = useTransaction({
+  const { submit: submitXdr, reset, status, hash, error, isLoading, isSuccess, isError } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
     ...(onSuccess && { onSuccess }),

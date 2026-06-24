@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { Horizon, Operation, TransactionBuilder } from "@stellar/stellar-sdk";
+import { AuthFlag, Horizon, Operation, TransactionBuilder } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
-import { useTransaction } from "./useTransaction";
+import { useTransactionCore } from "./useTransactionCore";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus } from "../types";
 import { unsafeAsXdrString } from "../types";
@@ -21,6 +21,26 @@ export interface UseAccountFlagsOptions {
   onError?: (error: Error) => void;
 }
 
+/**
+ * @example
+ * ```tsx
+ * const {
+ *   submit,    // () => Promise<void>
+ *   status,    // "idle" | "submitting" | "polling" | "success" | "error"
+ *   hash,      // string | null
+ *   isLoading, // boolean
+ *   isSuccess, // boolean
+ *   isError,   // boolean
+ *   error,     // Error | null
+ *   reset,     // () => void
+ * } = useAccountFlags({
+ *   setFlags: ["authRequired"],
+ *   clearFlags: ["authRevocable"],
+ * });
+ *
+ * return <button onClick={submit} disabled={isLoading}>Update flags</button>;
+ * ```
+ */
 export interface UseAccountFlagsReturn {
   submit: () => Promise<void>;
   status: TransactionStatus;
@@ -43,12 +63,27 @@ function toMask(flags: AccountFlag[]): number {
   return flags.reduce((mask, flag) => mask | FLAG_BITS[flag], 0);
 }
 
+/**
+ * Sets or clears account-level flags (authRequired, authRevocable, authImmutable,
+ * authClawbackEnabled) via a classic Stellar setOptions operation.
+ *
+ * Wraps `useTransaction({ mode: "classic" })` for submission and polling.
+ *
+ * @example
+ * ```tsx
+ * const { submit, status } = useAccountFlags({
+ *   setFlags: ["authRequired", "authRevocable"],
+ * });
+ *
+ * return <button onClick={submit} disabled={status !== "idle"}>Set Flags</button>;
+ * ```
+ */
 export function useAccountFlags(options: UseAccountFlagsOptions = {}): UseAccountFlagsReturn {
   const { setFlags, clearFlags, fee = 100, timeoutSeconds = 60, onSuccess, onError } = options;
 
   const { config } = useStellarContext();
   const { signTransaction, publicKey } = useFreighter();
-  const { submit: submitXdr, reset, ...txState } = useTransaction({
+  const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
     ...(onSuccess && { onSuccess }),
@@ -72,13 +107,10 @@ export function useAccountFlags(options: UseAccountFlagsOptions = {}): UseAccoun
 
     const setOptionsParams: Parameters<typeof Operation.setOptions>[0] = {};
     if (setFlagsMask !== undefined) {
-      // SDK AuthFlag type is narrower than our bitmask; runtime accepts the numeric mask.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setOptionsParams.setFlags = setFlagsMask as any;
+      setOptionsParams.setFlags = setFlagsMask as AuthFlag;
     }
     if (clearFlagsMask !== undefined) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setOptionsParams.clearFlags = clearFlagsMask as any;
+      setOptionsParams.clearFlags = clearFlagsMask as AuthFlag;
     }
 
     const builder = new TransactionBuilder(sourceAccount, {

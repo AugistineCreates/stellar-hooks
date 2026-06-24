@@ -28,6 +28,30 @@ export interface UseCreateAccountReturn {
   error: Error | null;
 }
 
+/**
+ * Fund a new Stellar account via Friendbot (testnet/futurenet only) or build a
+ * classic `createAccount` operation for mainnet.
+ *
+ * @example
+ * ```tsx
+ * const { fundWithFriendbot, isLoading, error } = useCreateAccount();
+ *
+ * // Fund an account on testnet
+ * await fundWithFriendbot("GNEW_PUBLIC_KEY...");
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Build a createAccount transaction for mainnet
+ * const { buildCreateAccountTransaction } = useCreateAccount();
+ * const tx = buildCreateAccountTransaction(
+ *   sourceAccountId,
+ *   destinationPublicKey,
+ *   "1",           // startingBalance in XLM
+ *   sequenceNumber,
+ * );
+ * ```
+ */
 export function useCreateAccount(options: UseCreateAccountOptions = {}): UseCreateAccountReturn {
   const { config, network } = useStellarContext();
   const [isLoading, setIsLoading] = useState(false);

@@ -11,19 +11,54 @@ type Brand<K, T> = K & { readonly __brand: T };
 
 // ─── Branded Types ───────────────────────────────────────────────────────
 
-/** A Stellar account public key (G-prefixed strkey, 56 chars) */
+/**
+ * A Stellar account public key (G-prefixed strkey, 56 chars)
+ *
+ * @example
+ * ```ts
+ * const key: StellarPublicKey = asPublicKey("GABC...XYZ");
+ * ```
+ */
 export type StellarPublicKey = Brand<string, "StellarPublicKey">;
 
-/** A Soroban smart contract ID (C-prefixed strkey, 56 chars) */
+/**
+ * A Soroban smart contract ID (C-prefixed strkey, 56 chars)
+ *
+ * @example
+ * ```ts
+ * const id: StellarContractId = asContractId("CABC...XYZ");
+ * ```
+ */
 export type StellarContractId = Brand<string, "StellarContractId">;
 
-/** A base64-encoded XDR string */
+/**
+ * A base64-encoded XDR string
+ *
+ * @example
+ * ```ts
+ * const xdr: StellarXdrString = asXdrString(transaction.toXDR());
+ * ```
+ */
 export type StellarXdrString = Brand<string, "StellarXdrString">;
 
-/** A Stellar transaction hash (hex string, 64 chars) */
+/**
+ * A Stellar transaction hash (hex string, 64 chars)
+ *
+ * @example
+ * ```ts
+ * const hash: StellarTxHash = asTxHash("a1b2c3d4..."); // 64-char hex
+ * ```
+ */
 export type StellarTxHash = Brand<string, "StellarTxHash">;
 
-/** A Stellar asset issuer public key (G-prefixed strkey) */
+/**
+ * A Stellar asset issuer public key (G-prefixed strkey)
+ *
+ * @example
+ * ```ts
+ * const issuer: StellarAssetIssuer = asAssetIssuer("GABC...XYZ");
+ * ```
+ */
 export type StellarAssetIssuer = Brand<string, "StellarAssetIssuer">;
 
 // ─── Validation Patterns ─────────────────────────────────────────────────

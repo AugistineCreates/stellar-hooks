@@ -15,6 +15,7 @@ export { useStellarAccount } from "./hooks/useStellarAccount";
 export { useStellarBalance } from "./hooks/useStellarBalance";
 export { useSorobanContract } from "./hooks/useSorobanContract";
 export { useTransaction } from "./hooks/useTransaction";
+export type { UseTransactionOptions, UseTransactionReturn } from "./hooks/useTransaction";
 export { useLedgerEntry } from "./hooks/useLedgerEntry";
 export { useStellarToml } from "./hooks/useStellarToml";
 export { useAssetMetadata } from "./hooks/useAssetMetadata";
@@ -64,6 +65,24 @@ export type {
   UseAccountMergeOptions,
   UseAccountMergeReturn,
 } from "./hooks/useAccountMerge";
+
+export {
+  useClaimableBalances,
+  useClaimBalance,
+  useCreateClaimableBalance,
+} from "./hooks/useClaimableBalance";
+export type {
+  ClaimableBalanceRecord,
+  ClaimableBalancesState,
+  ClaimableBalanceAsset,
+  ClaimantInput,
+  CreateClaimableBalanceParams,
+  UseClaimBalanceOptions,
+  UseClaimBalanceReturn,
+  UseClaimableBalancesReturn,
+  UseCreateClaimableBalanceOptions,
+  UseCreateClaimableBalanceReturn,
+} from "./hooks/useClaimableBalance";
 
 export { useSorobanTokenBalance } from "./hooks/useSorobanTokenBalance";
 export { useWalletsKit } from "./hooks/useWalletsKit";

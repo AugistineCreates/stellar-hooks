@@ -49,6 +49,20 @@ function reducer(state: EventsState, action: Action): EventsState {
   }
 }
 
+/**
+ * Poll or stream Soroban contract events from the RPC endpoint.
+ *
+ * @example
+ * ```tsx
+ * const { events, isLoading, error, refetch } = useContractEvents({
+ *   contractId: "CABC...XYZ",
+ *   startLedger: 100000,
+ *   refetchInterval: 5000,
+ * });
+ *
+ * return events.map((e) => <p key={e.id}>{JSON.stringify(e.value)}</p>);
+ * ```
+ */
 export function useContractEvents(options: UseContractEventsOptions) {
   const { config } = useStellarContext();
   const [state, dispatch] = useReducer(reducer, {
