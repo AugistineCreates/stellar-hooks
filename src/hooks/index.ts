@@ -38,6 +38,11 @@ export type {
   UsePaymentOptions,
   UsePaymentReturn,
 } from "./usePayment";
+export { useBumpSequence } from "./useBumpSequence";
+export type {
+  UseBumpSequenceOptions,
+  UseBumpSequenceReturn,
+} from "./useBumpSequence";
 export { usePathPayment } from "./usePathPayment";
 export { useTrade } from "./useTrade";
 export type {
