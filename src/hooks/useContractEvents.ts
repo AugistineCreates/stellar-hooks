@@ -73,16 +73,16 @@ export function useContractEvents(options: UseContractEventsOptions) {
       };
 
       const response = await server.getEvents({
-        ...(options.startLedger !== undefined ? { startLedger: options.startLedger } : {}),
+        ...(options.startLedger !== undefined && { startLedger: options.startLedger }),
+        ...(cursorRef.current !== undefined && { cursor: cursorRef.current }),
         filters: [filter],
-        ...(cursorRef.current !== undefined ? { cursor: cursorRef.current } : {}),
-        limit: options.limit || 100,
+        limit: options.limit ?? 100,
       });
 
       if (isMounted.current && response.events) {
-        const lastEvent = response.events[response.events.length - 1];
-        if (lastEvent) {
-          cursorRef.current = lastEvent.pagingToken;
+        if (response.events.length > 0) {
+          const lastEvent = response.events[response.events.length - 1];
+          if (lastEvent) cursorRef.current = lastEvent.pagingToken;
         }
         dispatch({ type: "SUCCESS", payload: response.events });
       }

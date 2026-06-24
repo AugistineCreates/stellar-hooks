@@ -24,6 +24,7 @@
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean --treeshake --external react,@stellar/stellar-sdk,@stellar/stellar-sdk/rpc,@stellar/stellar-sdk/contract,@stellar/freighter-api,@walletconnect/sign-client",
+    "build:types-package": "npm --prefix packages/types run build",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",

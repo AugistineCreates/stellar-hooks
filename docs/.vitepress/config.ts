@@ -81,7 +81,8 @@ export default defineConfig({
         text: 'Guides',
         items: [
           { text: 'Migration Guide', link: '/guides/migration-guide' },
-          { text: 'Release Runbook', link: '/guides/release-runbook' }
+          { text: 'Release Runbook', link: '/guides/release-runbook' },
+          { text: 'Soroban Cookbook', link: '/guides/soroban-cookbook' }
         ]
       }
     ],
