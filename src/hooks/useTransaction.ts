@@ -9,14 +9,13 @@ import { useCallback, useReducer } from "react";
 import { TransactionBuilder, Horizon } from "@stellar/stellar-sdk";
 import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
-import type { TransactionState, TransactionStatus, StellarXdrString } from "../types";
+import type { TransactionState, TransactionStatus, StellarXdrString, StellarTxHash } from "../types";
 import { asTxHash } from "../types";
 import { sleep, backoff } from "../utils";
 
 // ─── Options ──────────────────────────────────────────────────────────────────
 
 export interface UseTransactionOptions {
-  /** "soroban" uses rpc.Server; "classic" uses Horizon. Default: "soroban" */
   /** "soroban" uses rpc; "classic" uses Horizon. Default: "soroban" */
   mode?: "soroban" | "classic";
   /** Polling timeout in seconds. Default: 60 */

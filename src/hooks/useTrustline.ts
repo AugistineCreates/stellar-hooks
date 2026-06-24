@@ -16,6 +16,7 @@ import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus } from "../types";
+import { unsafeAsXdrString } from "../types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -145,7 +146,7 @@ export function useTrustline(options: UseTrustlineOptions): UseTrustlineReturn {
     const builtXdr = builtTx.toXDR();
 
     // 4. Sign via Freighter
-    const signedXdr = await signTransaction(builtXdr, {
+    const signedXdr = await signTransaction(unsafeAsXdrString(builtXdr), {
       networkPassphrase: config.networkPassphrase,
     });
 

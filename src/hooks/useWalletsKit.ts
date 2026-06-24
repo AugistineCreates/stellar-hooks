@@ -98,7 +98,7 @@ export function useWalletsKit(options?: WalletsKitOptions): UseWalletsKitReturn 
 
     // Probe for an already-active address (persisted session)
     StellarWalletsKit.getAddress()
-      .then(({ address }) => {
+      .then(({ address }: { address: string }) => {
         if (address) dispatch({ type: "CONNECTED", publicKey: address });
       })
       .catch(() => {

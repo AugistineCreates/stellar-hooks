@@ -16,7 +16,7 @@ import {
 import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
-import type { TransactionStatus, StellarPublicKey, StellarXdrString, StellarAssetIssuer } from "../types";
+import type { TransactionStatus, StellarPublicKey, StellarAssetIssuer } from "../types";
 import { unsafeAsXdrString } from "../types";
 import { validatePublicKey } from "../utils";
 

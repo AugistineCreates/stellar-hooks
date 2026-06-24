@@ -17,7 +17,7 @@ import type { Transaction } from "@stellar/stellar-sdk";
 import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
-import type { ContractCallOptions, UseContractCallReturn, TransactionStatus, StellarContractId, StellarXdrString, StellarTxHash } from "../types";
+import type { ContractCallOptions, UseContractCallReturn, TransactionStatus, StellarContractId, StellarTxHash } from "../types";
 import { unsafeAsXdrString, asTxHash, unsafeAsTxHash } from "../types";
 import { sleep, backoff, validateContractId } from "../utils";
 

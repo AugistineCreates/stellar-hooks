@@ -4,6 +4,7 @@ import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
 import { useTransaction } from "./useTransaction";
 import type { TransactionStatus } from "../types";
+import { unsafeAsXdrString } from "../types";
 
 export interface BuildOptions {
   memo?: string;
@@ -69,7 +70,7 @@ export function useMultiSig(options: UseMultiSigOptions = {}): UseMultiSigReturn
         networkPassphrase: config.networkPassphrase,
       });
 
-      operations.forEach(op => builder.addOperation(op));
+      operations.forEach(op => builder.addOperation(op as unknown as Parameters<typeof builder.addOperation>[0]));
       builder.setTimeout(timeoutSeconds);
 
       if (buildOpts?.memo) {
@@ -96,7 +97,7 @@ export function useMultiSig(options: UseMultiSigOptions = {}): UseMultiSigReturn
         throw new Error("Freighter is not connected. Call connect() first.");
       }
 
-      const signedXdr = await signTransaction(xdrToSign, {
+      const signedXdr = await signTransaction(unsafeAsXdrString(xdrToSign), {
         networkPassphrase: config.networkPassphrase,
       });
 
@@ -108,7 +109,7 @@ export function useMultiSig(options: UseMultiSigOptions = {}): UseMultiSigReturn
 
   const submit = useCallback(
     async (signedXdr: string): Promise<void> => {
-      await submitXdr(signedXdr);
+      await submitXdr(unsafeAsXdrString(signedXdr));
     },
     [submitXdr]
   );

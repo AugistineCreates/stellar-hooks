@@ -172,7 +172,7 @@ describe("usePathPayment", () => {
 
   it("uses Asset constructor for credit send asset", async () => {
     const { Asset } = await import("@stellar/stellar-sdk");
-    const hook = getHook({ sendAsset: { type: "credit", code: "XLM2", issuer: "GSEND..." } });
+    const hook = useHook({ sendAsset: { type: "credit", code: "XLM2", issuer: "GSEND..." } });
     await hook.submit();
 
     expect(Asset).toHaveBeenCalledWith("XLM2", "GSEND...");
@@ -180,7 +180,7 @@ describe("usePathPayment", () => {
 
   it("uses Asset.native() for native dest asset", async () => {
     const { Asset } = await import("@stellar/stellar-sdk");
-    const hook = getHook({ destAsset: { type: "native" } });
+    const hook = useHook({ destAsset: { type: "native" } });
     await hook.submit();
 
     expect(Asset.native).toHaveBeenCalled();
@@ -211,7 +211,7 @@ describe("usePathPayment", () => {
 
   it("passes an empty path array by default", async () => {
     const { Operation } = await import("@stellar/stellar-sdk");
-    const hook = getHook({ mode: "strict-send" });
+    const hook = useHook({ mode: "strict-send" });
     await hook.submit();
 
     expect(Operation.pathPaymentStrictSend).toHaveBeenCalledWith(
@@ -223,7 +223,7 @@ describe("usePathPayment", () => {
 
   it("creates Horizon.Server with config.horizonUrl", async () => {
     const { Horizon } = await import("@stellar/stellar-sdk");
-    const hook = getHook();
+    const hook = useHook();
     await hook.submit();
 
     expect(Horizon.Server).toHaveBeenCalledWith(
@@ -233,7 +233,7 @@ describe("usePathPayment", () => {
 
   it("builds TransactionBuilder with fee and networkPassphrase", async () => {
     const { TransactionBuilder } = await import("@stellar/stellar-sdk");
-    const hook = getHook({ fee: 200 });
+    const hook = useHook({ fee: 200 });
     await hook.submit();
 
     expect(TransactionBuilder).toHaveBeenCalledWith(
@@ -247,7 +247,7 @@ describe("usePathPayment", () => {
 
   it("passes custom timeoutSeconds to the operation", async () => {
     const { Operation } = await import("@stellar/stellar-sdk");
-    const hook = getHook({ mode: "strict-send", timeoutSeconds: 120 });
+    const hook = useHook({ mode: "strict-send", timeoutSeconds: 120 });
     await hook.submit();
 
     expect(Operation.pathPaymentStrictSend).toHaveBeenCalled();
@@ -255,7 +255,7 @@ describe("usePathPayment", () => {
 
   it("loads the source account using publicKey", async () => {
     const { Horizon } = await import("@stellar/stellar-sdk");
-    const hook = getHook();
+    const hook = useHook();
     await hook.submit();
 
     const serverMock = vi.mocked(Horizon.Server);
@@ -264,7 +264,7 @@ describe("usePathPayment", () => {
   });
 
   it("calls addOperation and setTimeout on the transaction builder", async () => {
-    const hook = getHook();
+    const hook = useHook();
     await hook.submit();
 
     expect(mockAddOperation).toHaveBeenCalledWith({
@@ -274,14 +274,14 @@ describe("usePathPayment", () => {
   });
 
   it("calls reset() from useTransaction", () => {
-    const hook = getHook();
+    const hook = useHook();
     hook.reset();
     expect(mockReset).toHaveBeenCalled();
   });
 
   it("throws when publicKey is null", async () => {
     mockPublicKey.value = null;
-    const hook = getHook();
+    const hook = useHook();
     await expect(hook.submit()).rejects.toThrow(
       "Freighter is not connected. Call connect() first."
     );
@@ -290,7 +290,7 @@ describe("usePathPayment", () => {
   describe("strict-send parameter mapping", () => {
     it("maps sendAmount and destMin correctly for credit send and native dest", async () => {
       const { Operation } = await import("@stellar/stellar-sdk");
-      const hook = getHook({
+      const hook = useHook({
         mode: "strict-send",
         sendAsset: { type: "credit", code: "USDC", issuer: "GISSUER..." },
         destAsset: { type: "native" },
@@ -311,7 +311,7 @@ describe("usePathPayment", () => {
   describe("strict-receive parameter mapping", () => {
     it("maps sendAmount as sendMax and destMin as destAmount", async () => {
       const { Operation } = await import("@stellar/stellar-sdk");
-      const hook = getHook({
+      const hook = useHook({
         mode: "strict-receive",
         sendAmount: "11",
         destMin: "10",
@@ -328,7 +328,7 @@ describe("usePathPayment", () => {
 
     it("works with both assets as credit", async () => {
       const { Operation } = await import("@stellar/stellar-sdk");
-      const hook = getHook({
+      const hook = useHook({
         mode: "strict-receive",
         sendAsset: { type: "credit", code: "USDC", issuer: "GISSUER1..." },
         destAsset: { type: "credit", code: "EURT", issuer: "GISSUER2..." },
@@ -347,7 +347,7 @@ describe("usePathPayment", () => {
 
     it("works with both assets as native", async () => {
       const { Operation } = await import("@stellar/stellar-sdk");
-      const hook = getHook({
+      const hook = useHook({
         mode: "strict-receive",
         sendAsset: { type: "native" },
         destAsset: { type: "native" },

@@ -74,7 +74,7 @@ describe("useFreighter — connected", () => {
 describe("useFreighter — network passphrase mismatch", () => {
   it("reports mismatch when expectedNetworkPassphrase option differs from Freighter", async () => {
     mockFreighterConnected(
-      "GDEMO123PUBLICKEY",
+      "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ",
       "PUBLIC",
       "Public Global Stellar Network ; September 2015",
     );
@@ -90,7 +90,7 @@ describe("useFreighter — network passphrase mismatch", () => {
   });
 
   it("reports no mismatch when passphrases match via expectedNetworkPassphrase option", async () => {
-    mockFreighterConnected("GDEMO123PUBLICKEY", "TESTNET", "Test SDF Network ; September 2015");
+    mockFreighterConnected("GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ", "TESTNET", "Test SDF Network ; September 2015");
 
     const { result } = renderHook(() =>
       useFreighter({ expectedNetworkPassphrase: "Test SDF Network ; September 2015" }),
@@ -103,7 +103,7 @@ describe("useFreighter — network passphrase mismatch", () => {
 
   it("uses StellarProvider config as the expected passphrase", async () => {
     mockFreighterConnected(
-      "GDEMO123PUBLICKEY",
+      "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ",
       "PUBLIC",
       "Public Global Stellar Network ; September 2015",
     );
@@ -120,7 +120,7 @@ describe("useFreighter — network passphrase mismatch", () => {
 
   it("does not report mismatch when no expected passphrase is available", async () => {
     mockFreighterConnected(
-      "GDEMO123PUBLICKEY",
+      "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ",
       "PUBLIC",
       "Public Global Stellar Network ; September 2015",
     );
