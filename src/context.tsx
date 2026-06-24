@@ -46,7 +46,7 @@ export function StellarProvider({
     if (savedCustomConfig) {
       try {
         setCustomConfig(JSON.parse(savedCustomConfig));
-      } catch {}
+      } catch { /* ignore invalid JSON in localStorage */ }
     }
   }, []);
 
@@ -75,6 +75,13 @@ export function StellarProvider({
   return (
     <StellarContext.Provider value={value}>{children}</StellarContext.Provider>
   );
+}
+
+/**
+ * Optional context reader — returns null when rendered outside {@link StellarProvider}.
+ */
+export function useOptionalStellarContext(): StellarContextInternalValue | null {
+  return useContext(StellarContext);
 }
 
 /**

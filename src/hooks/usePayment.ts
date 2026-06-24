@@ -14,9 +14,11 @@ import {
   TransactionBuilder,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
-import { useTransaction } from "./useTransaction";
+import { useTransactionCore } from "./useTransactionCore";
 import { useFreighter } from "./useFreighter";
-import type { TransactionStatus } from "../types";
+import type { TransactionStatus, StellarPublicKey, StellarAssetIssuer } from "../types";
+import { unsafeAsXdrString } from "../types";
+import { validatePublicKey } from "../utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -27,11 +29,11 @@ import type { TransactionStatus } from "../types";
  */
 export type PaymentAsset =
   | { type: "native" }
-  | { type: "credit"; code: string; issuer: string };
+  | { type: "credit"; code: string; issuer: StellarAssetIssuer };
 
 export interface UsePaymentOptions {
   /** Recipient Stellar address (G...) */
-  destination: string;
+  destination: StellarPublicKey;
   /** Asset to send */
   asset: PaymentAsset;
   /** Amount as a string, e.g. "10.5" */
@@ -116,7 +118,7 @@ export function usePayment(options: UsePaymentOptions): UsePaymentReturn {
 
   const { config } = useStellarContext();
   const { signTransaction, publicKey } = useFreighter();
-  const { submit: submitXdr, reset, ...txState } = useTransaction({
+  const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
     ...(onSuccess && { onSuccess }),
@@ -126,6 +128,11 @@ export function usePayment(options: UsePaymentOptions): UsePaymentReturn {
   const submit = useCallback(async () => {
     if (!publicKey) {
       throw new Error("Freighter is not connected. Call connect() first.");
+    }
+
+    validatePublicKey(destination, "destination");
+    if (asset.type === "credit") {
+      validatePublicKey(asset.issuer, "asset.issuer");
     }
 
     // 1. Load the source account from Horizon to get the sequence number
@@ -161,7 +168,7 @@ export function usePayment(options: UsePaymentOptions): UsePaymentReturn {
     const builtXdr = builtTx.toXDR();
 
     // 5. Sign via Freighter
-    const signedXdr = await signTransaction(builtXdr, {
+    const signedXdr = await signTransaction(unsafeAsXdrString(builtXdr), {
       networkPassphrase: config.networkPassphrase,
     });
 

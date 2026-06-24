@@ -14,9 +14,10 @@ import {
   xdr,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
-import { useTransaction } from "./useTransaction";
+import { useTransactionCore } from "./useTransactionCore";
 import { useFreighter } from "./useFreighter";
-import type { TransactionStatus } from "../types";
+import { unsafeAsXdrString, type TransactionStatus } from "../types";
+import { validatePublicKey } from "../utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -113,6 +114,11 @@ export interface UseClaimableBalancesReturn extends ClaimableBalancesState {
  * return <button onClick={() => claim(balance.id)}>Claim</button>;
  * ```
  */
+export interface UseClaimBalanceOptions {
+  onSuccess?: (hash: string) => void;
+  onError?: (error: Error) => void;
+}
+
 export interface UseClaimBalanceReturn {
   claim: (balanceId: string) => Promise<void>;
   status: TransactionStatus;
@@ -176,6 +182,7 @@ export function useClaimableBalances(
     dispatch({ type: "LOADING" });
 
     try {
+      validatePublicKey(publicKey);
       const server = new Horizon.Server(config.horizonUrl);
       const response = await server
         .claimableBalances()
@@ -229,7 +236,7 @@ export function useClaimBalance(
   const { onSuccess, onError } = options;
   const { config } = useStellarContext();
   const { signTransaction, publicKey } = useFreighter();
-  const { submit: submitXdr, reset, ...txState } = useTransaction({
+  const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
@@ -259,7 +266,7 @@ export function useClaimBalance(
       const builtXdr = tx.toXDR();
 
       // 3. Sign via Freighter
-      const signedXdr = await signTransaction(builtXdr, {
+      const signedXdr = await signTransaction(unsafeAsXdrString(builtXdr), {
         networkPassphrase: config.networkPassphrase,
       });
 

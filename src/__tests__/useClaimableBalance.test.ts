@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file useClaimableBalance.test.ts
  * @description Unit tests for the useClaimableBalance hook.
  * @package stellar-hooks
@@ -6,9 +6,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { useFreighter } from "../hooks/useFreighter";
 
-// ─── Mock React hooks ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Mock React hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 vi.mock("react", async () => {
   const actual = await vi.importActual<typeof import("react")>("react");
@@ -19,7 +18,7 @@ vi.mock("react", async () => {
   };
 });
 
-// ─── Mock @stellar/stellar-sdk ────────────────────────────────────────────────
+// â”€â”€â”€ Mock @stellar/stellar-sdk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const mockClaimantFn = vi.fn().mockReturnThis();
 const mockCallFn = vi.fn();
@@ -61,7 +60,7 @@ vi.mock("@stellar/stellar-sdk", () => ({
   })),
 }));
 
-// ─── Mock context and dependent hooks ─────────────────────────────────────────
+// â”€â”€â”€ Mock context and dependent hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const mockSubmitXdr = vi.fn().mockResolvedValue(undefined);
 const mockReset = vi.fn();
@@ -76,8 +75,8 @@ vi.mock("../context", () => ({
   }),
 }));
 
-vi.mock("../hooks/useTransaction", () => ({
-  useTransaction: () => ({
+vi.mock("../hooks/useTransactionCore", () => ({
+  useTransactionCore: () => ({
     submit: mockSubmitXdr,
     reset: mockReset,
     status: "idle",
@@ -96,16 +95,17 @@ vi.mock("../hooks/useFreighter", () => ({
   }),
 }));
 
-// ─── Import AFTER mocks ───────────────────────────────────────────────────────
+// â”€â”€â”€ Import AFTER mocks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 import {
   useClaimableBalances,
   useClaimBalance,
   useCreateClaimableBalance,
 } from "../hooks/useClaimableBalance";
+import { useClaimBalance } from "../hooks/useClaimableBalance";
 import { useReducer } from "react";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const mockDispatch = vi.fn();
 
@@ -121,18 +121,7 @@ function setupReducer(stateOverride = {}) {
   ] as unknown as ReturnType<typeof useReducer>);
 }
 
-const sampleRecord = {
-  id: "balance-id-1",
-  asset: "native",
-  amount: "100.0000000",
-  sponsor: "GSPONSOR",
-  last_modified_ledger: 123456,
-  claimants: [
-    { destination: "GPUBLICKEY", predicate: { unconditional: true } },
-  ],
-};
-
-// ─── Tests ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 describe("useClaimBalance", () => {
   beforeEach(() => {
@@ -181,14 +170,14 @@ describe("useClaimBalance", () => {
 
   it("throws when publicKey is null", async () => {
   // Call the async function directly with publicKey set to null in closure
-  const claimFn = async (balanceId: string) => {
+  const claimFn = async () => {
     const publicKey: string | null = null;
     if (!publicKey) {
       throw new Error("Freighter is not connected. Call connect() first.");
     }
   };
 
-  await expect(claimFn("balance-id-1")).rejects.toThrow(
+  await expect(claimFn()).rejects.toThrow(
     "Freighter is not connected"
   );
 });
