@@ -66,6 +66,12 @@ export type {
   UseSorobanTokenBalanceOptions,
 } from "./hooks/useSorobanTokenBalance";
 
+export { useCreateAccount } from "./hooks/useCreateAccount";
+export type { UseCreateAccountOptions, UseCreateAccountReturn } from "./hooks/useCreateAccount";
+
+export { useAssets } from "./hooks/useAssets";
+export type { UseAssetsOptions, UseAssetsReturn } from "./hooks/useAssets";
+
 // Types
 export type {
   // Network
