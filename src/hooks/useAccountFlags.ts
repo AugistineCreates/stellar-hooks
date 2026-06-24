@@ -4,6 +4,7 @@ import { useStellarContext } from "../context";
 import { useTransaction } from "./useTransaction";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus } from "../types";
+import { unsafeAsXdrString } from "../types";
 
 export type AccountFlag =
   | "authRequired"
@@ -69,23 +70,26 @@ export function useAccountFlags(options: UseAccountFlagsOptions = {}): UseAccoun
       throw new Error("At least one of setFlags or clearFlags must be provided.");
     }
 
+    const setOptionsParams: Parameters<typeof Operation.setOptions>[0] = {};
+    if (setFlagsMask !== undefined) {
+      setOptionsParams.setFlags = setFlagsMask as any;
+    }
+    if (clearFlagsMask !== undefined) {
+      setOptionsParams.clearFlags = clearFlagsMask as any;
+    }
+
     const builder = new TransactionBuilder(sourceAccount, {
       fee: String(fee),
       networkPassphrase: config.networkPassphrase,
     })
-      .addOperation(
-        Operation.setOptions({
-          setFlags: setFlagsMask,
-          clearFlags: clearFlagsMask,
-        })
-      )
+      .addOperation(Operation.setOptions(setOptionsParams))
       .setTimeout(timeoutSeconds);
 
     const builtTx = builder.build();
     const builtXdr = builtTx.toXDR();
 
-    const signedXdr = await signTransaction(builtXdr, {
-      networkPassphrase: config.networkPassphrase,
+    const signedXdr = await signTransaction(unsafeAsXdrString(builtXdr), {
+       networkPassphrase: config.networkPassphrase,
     });
 
     await submitXdr(signedXdr);

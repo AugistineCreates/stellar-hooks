@@ -12,11 +12,6 @@ export type { UseEffectsOptions, UseEffectsReturn } from "./useEffects";
 
 export { useFreighter } from "./useFreighter";
 
-export { useTrades } from "./useTrades";
-export type { Trade, UseTradesOptions, UseTradesReturn } from "./useTrades";
-
-export { useAsset } from "./useAsset";
-export type { AssetMetadata, UseAssetOptions, UseAssetReturn } from "./useAsset";
 
 export { useStellarToml } from "./useStellarToml";
 export type { UseStellarTomlOptions, UseStellarTomlReturn } from "./useStellarToml";
@@ -81,6 +76,12 @@ export type {
   UseMultiSigOptions,
   UseMultiSigReturn,
 } from "./useMultiSig";
+
+export { useTrustline } from "./useTrustline";
+export type {
+  UseTrustlineOptions,
+  UseTrustlineReturn,
+} from "./useTrustline";
 export { useCreateAccount } from "./useCreateAccount";
 export type { UseCreateAccountOptions, UseCreateAccountReturn } from "./useCreateAccount";
 

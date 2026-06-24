@@ -5,8 +5,7 @@
  * @license MIT
  */
 
-import type { Horizon, rpc, xdr } from "@stellar/stellar-sdk";
-import type { Horizon } from "@stellar/stellar-sdk";
+import type { Horizon, xdr } from "@stellar/stellar-sdk";
 import type * as rpc from "@stellar/stellar-sdk/rpc";
 
 // ─── Network ──────────────────────────────────────────────────────────────────
@@ -23,28 +22,41 @@ export interface NetworkConfig {
   networkPassphrase: string;
 }
 
-export {
-  // Branded types
+import {
   type StellarPublicKey,
   type StellarContractId,
   type StellarXdrString,
   type StellarTxHash,
   type StellarAssetIssuer,
-  
-  // Factory functions
   asPublicKey,
   asContractId,
   asXdrString,
   asTxHash,
   asAssetIssuer,
-  
-  // Unsafe casts
   unsafeAsPublicKey,
   unsafeAsContractId,
   unsafeAsXdrString,
   unsafeAsTxHash,
   unsafeAsAssetIssuer,
 } from "./branded";
+
+export {
+  type StellarPublicKey,
+  type StellarContractId,
+  type StellarXdrString,
+  type StellarTxHash,
+  type StellarAssetIssuer,
+  asPublicKey,
+  asContractId,
+  asXdrString,
+  asTxHash,
+  asAssetIssuer,
+  unsafeAsPublicKey,
+  unsafeAsContractId,
+  unsafeAsXdrString,
+  unsafeAsTxHash,
+  unsafeAsAssetIssuer,
+};
 
 /**
  * Endpoint configuration for a private or self-hosted Stellar network.
@@ -194,7 +206,7 @@ export interface TransactionState<TResult = unknown> {
 
 // ─── Soroban Contract ─────────────────────────────────────────────────────────
 
-export interface ContractCallOptions<TResult = any> {
+export interface ContractCallOptions<TResult = unknown> {
   /** Soroban contract address (C...) */
   contractId: StellarContractId;
   method: string;

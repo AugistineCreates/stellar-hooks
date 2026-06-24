@@ -8,7 +8,7 @@ import {
   signAuthEntry,
   signMessage,
 } from "@stellar/freighter-api";
-import type { FreighterState, SignTransactionOptions, UseFreighterReturn } from "../types";
+import type { FreighterState, SignTransactionOptions, UseFreighterReturn, StellarPublicKey, StellarXdrString } from "../types";
 import { asPublicKey, unsafeAsXdrString } from "../types";
 
 // ─── State Machine ────────────────────────────────────────────────────────────
@@ -38,6 +38,7 @@ function reducer(state: FreighterState, action: Action): FreighterState {
     case "SET_DISCONNECTED":
       return {
         ...state,
+        isInstalled: true,
         isConnected: false,
         publicKey: null,
         network: null,
